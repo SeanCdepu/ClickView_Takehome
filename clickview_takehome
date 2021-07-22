@@ -11,3 +11,30 @@ Select * from clickview.accounts
 cross join
 (select company_name from clickview.names limit 1)
 This would add a column where every cell is whatever came from clickview_names
+
+### Task 2
+--Create a table from the JSON first
+select * from
+create or replace table clickview_test
+(
+  src variant
+)
+as
+select parse_json(column1) as src
+from values
+('{
+   "id": 1,
+   "folders": [
+{
+      "id": 10,
+      "name": "History"
+},
+         {
+   "id": 11,
+   "name":"Science"
+   }
+   ]
+}') v;
+
+-- Get what I need from it
+select * from clickview_test where src:folders.id = '10';
