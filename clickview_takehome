@@ -38,3 +38,7 @@ from values
 
 -- Get what I need from it
 select * from clickview_test where src:folders.id = '10';
+
+### Task 3
+
+Around half of the total micro-partitions are not constant, these would benefit from a re-clustering. The average overlap is somewhat high but not insanely as well as the depth, the higher these are the worse the performance will be. From the histogram you can see that the distribution of the micro-partitions isn’t good, a large portion are in a single bucket (index 1) and the rest of the distribution heavily skews towards the buckets 8-15 which will lead to poor performance as the load is centered on those buckets. I'd recommend re-clustering.
