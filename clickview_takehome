@@ -16,6 +16,9 @@ cross join
 (select company_name from clickview.names limit 1)
 This would add a column where every cell is whatever came from clickview_names
 ```
+
+image for reference - https://i.stack.imgur.com/UI25E.jpg
+
 ### B)
 Natual joins are like inner joins but will join based on columns with the same name and wont duplicate columns in a select statement e.g. col1, col2, col3 rather than a.col1, a.col2, b.col1, b.col3
 
