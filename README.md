@@ -29,7 +29,8 @@ from
 Natual joins are like inner joins but will join based on columns with the same name and wont duplicate columns in a select statement e.g. col1, col2, col3 rather than a.col1, a.col2, b.col1, b.col3
 
 ## Task 2
-```--Create a table from the JSON first
+```
+--Create a table from the JSON first
 create or replace table scar_playground.clickview_task2
 (
  src variant
@@ -83,8 +84,41 @@ where key = 'series' and id = '14';```
 ```
 
 ## Task 3
+```-- Use security team or account admin account so appropriate owner appears in logs
+USE ROLE ACCOUNTADMIN;
 
+-- Create role with comment to it's use
+create role if not exists BI_TOOL_ROLE comment = 'A read/write role for monitoring BI tool usage';
 
+grant usage on warehouse BI_TOOL_WAREHOUSE to role BI_TOOL_ROLE;
+grant usage on database CLICKVIEW_DB to role BI_TOOL_ROLE;
+
+-- BI tool will be able to see and query all tables and views in the CLICKVIEW schema
+grant usage on schema CLICKVIEW_DB.CLICKVIEW to role BI_TOOL_ROLE;
+grant select on all tables in schema CLICKVIEW_DB.CLICKVIEW to role BI_TOOL_ROLE;
+grant select on all views in schema CLICKVIEW_DB.CLICKVIEW to role BI_TOOL_ROLE;
+grant select on future tables in schema CLICKVIEW_DB.CLICKVIEW to role BI_TOOL_ROLE;
+grant select on future views in schema CLICKVIEW_DB.CLICKVIEW to role BI_TOOL_ROLE;
+
+-- This role will be able to view queries and usage in the new warehouse as well as edit settings i.e. warehouse size
+grant modify on warehouse BI_TOOL_WAREHOUSE to role BI_TOOL_ROLE;
+grant monitor on warehouse BI_TOOL_WAREHOUSE to role BI_TOOL_ROLE;
+
+-- Don't know if this role should be able to edit the tables and views, would require approval first
+-- grant create table on schema CLICKVIEW_DB.CLICKVIEW to role BI_TOOL_ROLE;
+-- grant create view on schema CLICKVIEW_DB.CLICKVIEW to role BI_TOOL_ROLE;
+-- grant insert, update on all tables in schema CLICKVIEW_DB.CLICKVIEW to role BI_TOOL_ROLE;
+-- grant insert, update on all views in schema CLICKVIEW_DB.CLICKVIEW to role BI_TOOL_ROLE;
+-- grant insert, update on future tables in schema CLICKVIEW_DB.CLICKVIEW to role BI_TOOL_ROLE;
+-- grant insert, update on future views in schema CLICKVIEW_DB.CLICKVIEW to role BI_TOOL_ROLE;
+
+-- Assign the correct user to the new role
+grant role BI_TOOL_ROLE to user "SEAN_CAR";
+
+-- Allow the Looker role to see future views (not tables)
+grant usage on schema CLICKVIEW_DB.CLICKVIEW to role LOOKER_ROLE;
+grant select on future views in schema CLICKVIEW_DB.CLICKVIEW to role LOOKER_ROLE;
+```
 ## Task 4
 
 Around half of the total micro-partitions are not constant, these would benefit from a re-clustering. The average overlap is somewhat high but not insanely as well as the depth, the higher these are the worse the performance will be. From the histogram you can see that the distribution of the micro-partitions isn’t good, a large portion are in a single bucket (index 1) and the rest of the distribution heavily skews towards the buckets 8-15 which will lead to poor performance as the load is centered on those buckets. I'd recommend re-clustering.
