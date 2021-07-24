@@ -3,6 +3,8 @@
 ### A)
 - Inner joins – A join for only retrieving records that has a criterion that exists in both tables. This could be used to find a list of customers that use both the playlist feature AND has watched Romeo & Juliet (assuming these events are in separate tables)
 
+Credit: w3schools aka my heroes (https://www.w3schools.com/sql/img_innerjoin.gif)
+
 - Full Outer Join – A join for retrieving the full dataset from both tables, linking records that satisfy the join criteria into a single record. This could be used to create a matrix of customer ids based on what events they have and haven’t triggered by outer joining on cust_id in event tables and setting all nulls to 0.
 e.g.
 |----------| ev1 | ev2 | ev3 | ev4 |
@@ -11,8 +13,11 @@ e.g.
 | cust_id2 | 1   | 0   | 1   | 1   |
 | cust_id3 | 1   | 0   | 1   | 0   |
 
+Credit: w3schools aka my heroes (https://www.w3schools.com/sql/img_fulljoin.gif)
 
 - Left Join – The most common join. Adding data from the 2nd table to the 1st, only retrieving data from the 2nd that satisfies the join criteria. This could be used to add columns from a lookup table or add some extra data from another object with a linking id key such as adding billing info to a list of accounts.
+
+Credit: w3schools (https://www.w3schools.com/sql/img_leftjoin.gif)
 
 - Right join – same as left join but visa versa. I would usually just use left joins, but you could use right joins for the same purpose as above
 
@@ -66,12 +71,16 @@ from values
     "name": "Einstein"
     }
 }') v;
-
+```
+## A)
+```
 -- flatten the JSON by folders to access folder ids and data
 select 'folders' as key, value:id::number as id, value:name::string as name from scar_playground.clickview_task2
     ,lateral flatten( input => src:folders)
 where id = '10';
-
+```
+## B)
+```
 -- flatten the JSON by libraries to access library ids and data
 select 'libraries' as key, value:id::number as id, value:name::string as name from scar_playground.clickview_task2
     ,lateral flatten( input => src:libraries)
@@ -80,7 +89,7 @@ union
 -- Can flatten specifically to src since series only has 1 record and contains a key (would need to edit if series data expands)
 select key, value:id::number as id, value:name::string as name from scar_playground.clickview_task2
     ,lateral flatten( input => src)
-where key = 'series' and id = '14';```
+where key = 'series' and id = '14';
 ```
 
 ## Task 3
@@ -121,12 +130,12 @@ grant select on future views in schema CLICKVIEW_DB.CLICKVIEW to role LOOKER_ROL
 ```
 ## Task 4
 
-Analysis of the query
+### Analysis of the query
 The cluster key is the timestamp column truncated to date which makes for a great key as this means it has enough cardinality that snowflake can do effective pruning on the table but not so many that the same values can’t be grouped into the same micro-partitions. Around half of the micro-partitions are able constant and these aid in query performance as Snowflake can easily prune them when scanning the dataset. Overlaps are micro-partitions that contain the same values as other micro-partitions, making it harder for Snowflake to prune through them as it scans over the same values multiple times. Overlap depth is the amount of overlapping micro-partitions on a single value. This is the one that can greatly affect performance and should be kept to a minimum. Shown in the histogram, almost half the partitions have a depth of 1 which is great, the numbers further down are the concerning ones.
 
 Credit: snowflake documentation - (https://docs.snowflake.com/en/_images/tables-clustering-ratio.png)
 
-How to improve performance
+### How to improve performance
 
 Re-clustering is done by Snowflake automatically (unlike what I said on my last attempt) but this process takes credits, especially on larger tables so there are some things to minimise how often this has to happen and improve average query performance:
 
@@ -135,3 +144,6 @@ Re-clustering is done by Snowflake automatically (unlike what I said on my last 
 -	Table clustering degrades the more DML performed on the table, lowering the update/merge rate on this table would help decrease the number of times you would need to re-cluster
 -	One the same vain as lowering DML, splitting out this table based on requirements of this data’s lead time such as creating a table for real-time requirements and daily load requirements
 - Creating views on top of this table which only looks at the most recent data is also a great tactic of increasing query performance I like to use
+
+# Editor's Note
+After my performance on the last tech test it was apparent that Snowflake's clustering and query optimisation was a definite gap in my knowledge so before attempting this second chance I did spend about an hour researching how they work. In the interest of setting accurate expectations of why technical skill, this task took me around 2 hours to complete excluding research done beforehand. I wanted to make sure I double checked everything and didn't rush.
