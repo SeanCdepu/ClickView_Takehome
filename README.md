@@ -121,4 +121,17 @@ grant select on future views in schema CLICKVIEW_DB.CLICKVIEW to role LOOKER_ROL
 ```
 ## Task 4
 
-Around half of the total micro-partitions are not constant, these would benefit from a re-clustering. The average overlap is somewhat high but not insanely as well as the depth, the higher these are the worse the performance will be. From the histogram you can see that the distribution of the micro-partitions isn’t good, a large portion are in a single bucket (index 1) and the rest of the distribution heavily skews towards the buckets 8-15 which will lead to poor performance as the load is centered on those buckets. I'd recommend re-clustering.
+Analysis of the query
+The cluster key is the timestamp column truncated to date which makes for a great key as this means it has enough cardinality that snowflake can do effective pruning on the table but not so many that the same values can’t be grouped into the same micro-partitions. Around half of the micro-partitions are able constant and these aid in query performance as Snowflake can easily prune them when scanning the dataset. Overlaps are micro-partitions that contain the same values as other micro-partitions, making it harder for Snowflake to prune through them as it scans over the same values multiple times. Overlap depth is the amount of overlapping micro-partitions on a single value. This is the one that can greatly affect performance and should be kept to a minimum. Shown in the histogram, almost half the partitions have a depth of 1 which is great, the numbers further down are the concerning ones.
+
+Credit: snowflake documentation - (https://docs.snowflake.com/en/_images/tables-clustering-ratio.png)
+
+How to improve performance
+
+Re-clustering is done by Snowflake automatically (unlike what I said on my last attempt) but this process takes credits, especially on larger tables so there are some things to minimise how often this has to happen and improve average query performance:
+
+-	Potentially add another cluster key with the same properties as I discussed above. This could be ‘TYPE’ depending on how many types there are (I don’t fully understand the definition of this field)
+-	If this table contains ALL the ClickView data, then splitting the JSON data into separate flattened tables based on object (e.g. events, accounts, users, libraries, etc.) could be a cheaper way of querying for analytics and troubleshooting
+-	Table clustering degrades the more DML performed on the table, lowering the update/merge rate on this table would help decrease the number of times you would need to re-cluster
+-	One the same vain as lowering DML, splitting out this table based on requirements of this data’s lead time such as creating a table for real-time requirements and daily load requirements
+- Creating views on top of this table which only looks at the most recent data is also a great tactic of increasing query performance I like to use
