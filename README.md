@@ -1,23 +1,29 @@
-# Clickview-Takehome
+# ClickView-Takehome
 ## Task 1
 ### A)
-- Inner joins – retrieving rows that have matching values in both tables. You would use this when you want to join data from 2 tables and only want the data which is contained in both tables
+- Inner joins – A join for only retrieving records that has a criterion that exists in both tables. This could be used to find a list of customers that use both the playlist feature AND has watched Romeo & Juliet (assuming these events are in separate tables)
 
-- Full Outer Join – retrieving rows from both tables if there is a match in either table. You would need this kind of join when you want to link records that are shared across both tables and keep the rest of the data from both tables (data should be relatively small cause it can be costly)
+- Full Outer Join – A join for retrieving the full dataset from both tables, linking records that satisfy the join criteria into a single record. This could be used to create a matrix of customer ids based on what events they have and haven’t triggered by outer joining on cust_id in event tables and setting all nulls to 0.
+e.g.
+|----------| ev1 | ev2 | ev3 | ev4 |
+|----------|-----|-----|-----|-----|
+| cust_id1 | 1   | 1   | 0   | 1   |
+| cust_id2 | 1   | 0   | 1   | 1   |
+| cust_id3 | 1   | 0   | 1   | 0   |
 
-- Left Join – retrieving rows from all of the left table, only retrieving records that match to the left table from the right. This is the most common one, you usually use this to add on extra fields from another table with a linking key
+
+- Left Join – The most common join. Adding data from the 2nd table to the 1st, only retrieving data from the 2nd that satisfies the join criteria. This could be used to add columns from a lookup table or add some extra data from another object with a linking id key such as adding billing info to a list of accounts.
 
 - Right join – same as left join but visa versa. I would usually just use left joins, but you could use right joins for the same purpose as above
 
-- Cross join – creates records of a combination of each record in the left table with each row of the right. These are extremely expensive to use so I don’t do it often but when I do it’s usually to join a single cell of data a new row to my table. E.G
+- Cross join – creates records of a combination of each record in the 1st table with each row of the 2nd. These are extremely expensive to use so I don’t do it often, but they are useful for create grids of data to use as dimension templates such as creating a table for every combination of flavours and sizes of coke
 ```
-Select * from clickview.accounts
-cross join
-(select company_name from clickview.names limit 1)
-This would add a column where every cell is whatever came from clickview_names
+select
+    flavour,
+    size
+from
+    flavours  CROSS JOIN sizes
 ```
-
-image for reference - https://i.stack.imgur.com/UI25E.jpg
 
 ### B)
 Natual joins are like inner joins but will join based on columns with the same name and wont duplicate columns in a select statement e.g. col1, col2, col3 rather than a.col1, a.col2, b.col1, b.col3
