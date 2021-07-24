@@ -6,12 +6,7 @@
 Credit: w3schools aka my heroes (https://www.w3schools.com/sql/img_innerjoin.gif)
 
 - Full Outer Join – A join for retrieving the full dataset from both tables, linking records that satisfy the join criteria into a single record. This could be used to create a matrix of customer ids based on what events they have and haven’t triggered by outer joining on cust_id in event tables and setting all nulls to 0.
-e.g.
-|----------| ev1 | ev2 | ev3 | ev4 |
-|----------|-----|-----|-----|-----|
-| cust_id1 | 1   | 1   | 0   | 1   |
-| cust_id2 | 1   | 0   | 1   | 1   |
-| cust_id3 | 1   | 0   | 1   | 0   |
+example (https://i.imgur.com/j9sXPUK.png)
 
 Credit: w3schools (https://www.w3schools.com/sql/img_fulljoin.gif)
 
