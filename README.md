@@ -13,7 +13,7 @@ e.g.
 | cust_id2 | 1   | 0   | 1   | 1   |
 | cust_id3 | 1   | 0   | 1   | 0   |
 
-Credit: w3schools aka my heroes (https://www.w3schools.com/sql/img_fulljoin.gif)
+Credit: w3schools (https://www.w3schools.com/sql/img_fulljoin.gif)
 
 - Left Join – The most common join. Adding data from the 2nd table to the 1st, only retrieving data from the 2nd that satisfies the join criteria. This could be used to add columns from a lookup table or add some extra data from another object with a linking id key such as adding billing info to a list of accounts.
 
