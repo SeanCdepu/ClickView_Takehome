@@ -26,7 +26,8 @@ from
 ```
 
 ### B)
-Natual joins are like inner joins but will join based on columns with the same name and wont duplicate columns in a select statement e.g. col1, col2, col3 rather than a.col1, a.col2, b.col1, b.col3
+Explicit joins are normal joins such as inner, left or full outer where the 'ON' clause is used to define a criteria for the join to be linked by. Natual joins create the 'ON' clause for you based on columns with shared names. These joins won't duplicate columns in a select statement e.g. col1, col2, col3 rather than a.col1, a.col2, b.col1, b.col3
+
 
 ## Task 2
 ```
@@ -88,7 +89,8 @@ where key = 'series' and id = '14';
 ```
 
 ## Task 3
-```-- Use security team or account admin account so appropriate owner appears in logs
+```
+-- Use security team or account admin account so appropriate owner appears in logs
 USE ROLE ACCOUNTADMIN;
 
 -- Create role with comment to it's use
